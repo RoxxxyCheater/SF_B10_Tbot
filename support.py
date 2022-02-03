@@ -2,7 +2,7 @@ import requests
 import json
 
 
-TOKEN = "5176731993:AAGi9FjH0sBd22hvMja625awme-CETeKEBU"
+TOKEN = ""
 
 keys = {
     'EUR': 'Euro',

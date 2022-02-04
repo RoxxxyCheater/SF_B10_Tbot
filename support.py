@@ -2,7 +2,7 @@ import requests
 import json
 
 
-TOKEN = ""
+TOKEN = "5176731993:AAGi9FjH0sBd22hvMja625awme-CETeKEBU"
 
 keys = {
     'EUR': 'Euro',
@@ -32,6 +32,5 @@ res = json.loads(r.content)
 for x in res.get('Data'):
     keys_top.update({x['CoinInfo']['Name']: x['CoinInfo']['FullName']})
 
-errors_log = []
 
 

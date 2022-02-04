@@ -1,25 +1,28 @@
-from raises import ConvExeption, WrongTransaction
+from raises import ConvExeption, WrongTransaction, errors_log
 from support import keys,keys_top, TOKEN, HELP
 import telebot
 from decimal import Decimal
 
 bot = telebot.TeleBot(TOKEN)
 
-@bot.message_handler(commands=['start'])#Старт - Приветствие
+@bot.message_handler(commands=['start'])
 def handle_start_help(message: telebot.types.Message):
     bot.reply_to(message, f"Приветствую {message.from_user.full_name}! \nПомощь - /help, \nСписок TOP100 валют - /values")
 
 
-@bot.message_handler(commands=['help'])#помощь
+@bot.message_handler(commands=['help'])
 def handle_start_help(message: telebot.types.Message):
     bot.reply_to(message, HELP)
 
-@bot.message_handler(commands=['report'])#Error_log
+@bot.message_handler(commands=['report'])
 def handle_start_help(message: telebot.types.Message):
-    bot.reply_to(message, 'Благодарим за обращение,по обработке Вашего пожелания,мы с вами свяжемся.')
+    bot.reply_to(message, 'Благодарим за обращение,по обработке обращение,мы с вами свяжемся.')
 
+@bot.message_handler(commands=['show_log'])
+def handle_start_help(message: telebot.types.Message):
+    bot.reply_to(message, f'New: \n{errors_log}')
 
-@bot.message_handler(commands=['values'])#Отобразить ТОП100 валют для обмена
+@bot.message_handler(commands=['values'])
 def values(message: telebot.types.Message):
     text = 'Доступные валюты:\n'
     for cur in keys_top.items():
@@ -32,17 +35,17 @@ def values(message: telebot.types.Message):
 def convert(message: telebot.types.Message):
     name = message.from_user.full_name
     try:
-        inputed_values = message.text.upper().split(' ')#Разбив сообщений на 3 части 
+        inputed_values = message.text.upper().split(' ')
         if len(inputed_values) != 3:
             raise ConvExeption('Incorrect input data: Введите запрос в формате с одним пробелом без запятых: валюта1 валюта2 колл-во едениц ')
         curr_from, curr_to, amount = inputed_values
-        res = WrongTransaction.control(curr_from, curr_to, amount, name)#посылаем запрос после проверки
+        res = WrongTransaction.control(curr_from, curr_to, amount, name)
     except WrongTransaction as e:
         bot.reply_to(message, f'Ошибка пользователя.\n {e}')
     except Exception as e:
         bot.reply_to(message, f'Ошибка сервера: {e}. Не удалось обработать запрос,если ошибка повторяется напишите нам - /report или проверте правильность написания команды /help ')
     else:
-        text = f'Цена {amount} {keys[curr_from]} составляет: {res * Decimal(amount)} \n{keys[curr_to]}' #вывод сообщения 
+        text = f'Цена {amount} {keys[curr_from]} составляет: {res * Decimal(amount)} \n{keys[curr_to]}'
         bot.send_message(message.chat.id, text)
 
 bot.polling(none_stop=True)
